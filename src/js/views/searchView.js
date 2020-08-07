@@ -1,4 +1,4 @@
-import { elements, renderLoader } from './base';
+import { elements } from './base';
 
 export const getInput = () => elements.searchInput.value;
 
@@ -11,16 +11,26 @@ export const clearResults = () => {
     elements.searchResPages.innerHTML = '';
 };
 
-// 'Pasta, with, tomato, and, spinach'
-/*
+export const highlightedSelected = id => {
+    const resultsArr = Array.from(document.querySelectorAll('.results__link'));
+    resultsArr.forEach(el => {
+        el.classList.remove('results__link--active');
+    });
+    document.querySelector(`.results__link[href*="${id}"]`).classList.add('results__link--active');
+};
+
+// i.e. 'Pasta, with, tomato, and, spinach'
+/* i.e. ->
 acc: 0 / acc + cur.length = 5 / newTitle = ['Pasta']
 acc: 5 / acc + cur.length = 9 / newTitle = ['Pasta', 'with']
 acc: 9 / acc + cur.length = 15 / newTitle = ['Pasta', 'with', 'tomato']
 acc: 15 / acc + cur.length = 18 / newTitle = ['Pasta', 'with', 'tomato']
 acc: 18 / acc + cur.length = 24 / newTitle = ['Pasta', 'with', 'tomato']
 */
-const limitRecipeTitle = (title, limit = 17) => {
+
+export const limitRecipeTitle = (title, limit = 17) => {
     const newTitle = [];
+
     if(title.length > limit) {
         title.split(' ').reduce((acc, cur) => {
             if (acc + cur.length <= limit) {
@@ -36,7 +46,7 @@ const limitRecipeTitle = (title, limit = 17) => {
 };
 
 const renderRecipe = recipe => {
-    // generates markup containing the variable we want to print
+    // Generate markup containing the variables we want to print (template string - ES6)
     const markup = `
         <li>
             <a class="results__link" href="#${recipe.recipe_id}">
@@ -50,7 +60,7 @@ const renderRecipe = recipe => {
             </a>
         </li>
     `;
-    elements.searchResList.insertAdjacentHTML("beforeend", markup);
+    elements.searchResList.insertAdjacentHTML('beforeend', markup);
 };
 
 // type: 'prev' or 'next'
@@ -64,13 +74,14 @@ const createButton = (page, type) => `
 `;
 
 const renderButtons = (page, numResults, resPerPage) => {
-    const pages = Math.ceil(numResults / resPerPage); // rounds up to the next integer 4.5 = 5
+    const pages = Math.ceil(numResults / resPerPage);       // rounds up to the next integer 4.5 = 5
     let button;
+
     if (page === 1 && pages > 1) {
         // Only button to go to next page
         button = createButton(page, 'next');
     } else if (page < pages) {
-        // Both buttons
+        // Both buttons i.e. page 2 of 3 pages
         button = `
             ${createButton(page, 'prev')}
             ${createButton(page, 'next')}
@@ -88,6 +99,7 @@ export const renderResults = (recipes, page = 1, resPerPage = 10) => {
     const end = page * resPerPage; // 10, 20, 30
 
     recipes.slice(start, end).forEach(renderRecipe);
+    
     // render pagination buttons
     renderButtons(page, recipes.length, resPerPage);
 };
