@@ -1,4 +1,4 @@
-import { elements, renderLoader } from './base';
+import { elements } from './base';
 
 export const getInput = () => elements.searchInput.value;
 
@@ -9,6 +9,14 @@ export const clearInput = () => {
 export const clearResults = () => {
     elements.searchResList.innerHTML = '';
     elements.searchResPages.innerHTML = '';
+};
+
+export const highlightedSelected = id => {
+    const resultsArr = Array.from(document.querySelectorAll('.results__link'));
+    resultsArr.forEach(el => {
+        el.classList.remove('results__link--active');
+    });
+    document.querySelector(`.results__link[href*="${id}"]`).classList.add('results__link--active');
 };
 
 // 'Pasta, with, tomato, and, spinach'
@@ -50,7 +58,7 @@ const renderRecipe = recipe => {
             </a>
         </li>
     `;
-    elements.searchResList.insertAdjacentHTML("beforeend", markup);
+    elements.searchResList.insertAdjacentHTML('beforeend', markup);
 };
 
 // type: 'prev' or 'next'
