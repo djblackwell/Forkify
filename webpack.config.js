@@ -1,7 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-module.exports = { // node.js syntax
+module.exports = {                                          // node.js syntax
     entry: ['babel-polyfill', './src/js/index.js'],
     output: {
         path: path.resolve(__dirname, 'dist'),
@@ -20,7 +20,7 @@ module.exports = { // node.js syntax
         rules: [
             {
                 test: /\.js$/,
-                exclude: /node_modules/, // exclude tonnes of js objs
+                exclude: /node_modules/,                    // exclude tonnes of js objs
                 use: {
                     loader: 'babel-loader'
                 }

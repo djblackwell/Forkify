@@ -17,12 +17,14 @@ export default class Recipe {
             alert('Something went wrong');
         }
     }
+
     calcTime() {
         // Assuming that we need 15 mins for each 3 ingredients
         const numIng = this.ingredients.length;
         const periods = Math.ceil(numIng / 3);
         this.time = periods * 15;
     }
+
     calcServings() {
         this.servings = 4;
     }
@@ -33,14 +35,14 @@ export default class Recipe {
         const units = [...unitsShort, 'kg', 'g'];
 
         const newIngredients = this.ingredients.map(el => {
-            // 1. Unitform units
-            let ingredient = el.toLowerCase(); // convert all to lowercase before..
-            unitsLong.forEach((unit, i) => { // loop over unitsLong 
-                ingredient = ingredient.replace(unit, unitsShort[i]); // add to units short 
+            // 1. Unit from units value
+            let ingredient = el.toLowerCase();                              // convert all to lowercase before..
+            unitsLong.forEach((unit, i) => {                                // loop over unitsLong 
+                ingredient = ingredient.replace(unit, unitsShort[i]);       // add to units short 
             });
 
             // 2. Remove Parentheses
-            ingredient = ingredient.replace(/ *\([^)]*\) */g, ' '); // Regular expression replace with space regex
+            ingredient = ingredient.replace(/ *\([^)]*\) */g, ' ');         // Regular expression replace with space regex
         
 
             // 3. Parse ingredients into count, unit and ingredient
@@ -48,12 +50,12 @@ export default class Recipe {
             const unitIndex = arrIng.findIndex(el2 => units.includes(el2)); // good ES6 new method ****!!!!
             let objIng;
 
-            if (unitIndex > -1) {
-                // There is a unit
-                // Ex. 4 1/2 cups, arrCount is [4, 1/2] --> eval("4+1/2") --> 4.5
-                // Ex. 4 cups, arrCount is [4]
+            if (unitIndex > -1) {   // There is a unit
+                                    // Ex. 4 1/2 cups, arrCount is [4, 1/2] --> eval("4+1/2") --> 4.5
+                                    // Ex. 4 cups, arrCount is [4]
                 const arrCount = arrIng.slice(0, unitIndex);
                 let count;
+
                 if (arrCount.length === 1) {
                     count = eval(arrIng[0].replace('-', '+'));
                 } else {
@@ -66,18 +68,19 @@ export default class Recipe {
                 };
 
             } else if (parseInt(arrIng[0], 10)) {
-                // There is NO unit, but 1st element is a number
+                // There is NO unit, but 1st element IS a number
                 objIng = {
                     count: parseInt(arrIng[0], 10),
                     unit: '',
                     ingredient: arrIng.slice(1).join(' ')
                 }
+
             } else if (unitIndex === -1) {
-                // There is no unit and no number in 1st position
+                // There is NO unit and NO number in 1st position
                 objIng = {
                     count: 1,
                     unit: '',
-                    ingredient // auto creates and assigns the value no - : 
+                    ingredient   // auto creates and assigns the value no need to set - 'ingredient: 'fggfs';'
                 }
             }
 

@@ -1,8 +1,9 @@
+// imported functions from './file.location'
 import Search from './models/Search';
 import Recipe from './models/Recipe';
 import List from './models/List';
 import Likes from './models/Likes';
-import * as searchView from './views/searchView'; // imported functions from searchView
+import * as searchView from './views/searchView';
 import * as recipeView from './views/recipeView';
 import * as listView from './views/listView';
 import * as likesView from './views/likesView';
@@ -14,18 +15,18 @@ import { elements, renderLoader, clearLoader } from './views/base';
 - Shopping list Object
 - Liked Recipes
 */
-const state = {}; // start with an empty state on load
-window.state = state;
+
+const state = {};                                   // start with an empty state on load
 
 //*** SEARCH CONTROLLER ***//
-const controlSearch = async () => { // async so we can use await
+const controlSearch = async () => {                 // async so we can use await
     // 1. get query from view
-    const query = searchView.getInput(); // Read the user input from input
-    //const query = 'pizza';
+    const query = searchView.getInput();            // Read the user input from input
+    //const query = 'pizza';                        // Testing
 
     if(query) {
         // 2. Create new Search object and add to state variable
-        state.search = new Search(query); // store the object in the Global state object 
+        state.search = new Search(query);           // store the object in the Global state object 
 
         // 3. Prepare UI for results
         searchView.clearInput();
@@ -34,11 +35,11 @@ const controlSearch = async () => { // async so we can use await
 
         try {
             // 4. Search for recipes
-            await state.search.getResults(); // Get results from the API call
+            await state.search.getResults();        // Get results from the API call
 
             // 5. render results on UI
             clearLoader();
-            searchView.renderResults(state.search.result); // Render the results on the DOM (UI)
+            searchView.renderResults(state.search.result); // Render the results in the DOM (UI)
         } catch (err) {
             alert('Error, something wrong with search...!');
             clearLoader();
@@ -74,15 +75,15 @@ const controlRecipe = async () => {
         if (state.search) searchView.highlightedSelected(id);
 
         // Create new Recipe Object
-        state.recipe = new Recipe(id); // crete new object and store in state []
+        state.recipe = new Recipe(id);              // crete new object and store in state []
         
         try {
             // Get recipe Data and Parse ingredients
-            await state.recipe.getRecipe(); // returns promise once complete 
+            await state.recipe.getRecipe();         // returns promise once complete 
             state.recipe.parseIngredients();
 
             // Calculate servings and time
-            state.recipe.calcTime(); // calculate time and servings
+            state.recipe.calcTime();                // calculate time and servings
             state.recipe.calcServings();
 
             // Render recipe
@@ -103,10 +104,10 @@ const controlRecipe = async () => {
 
 //*** LIST CONTROLLER ***//
 const controlList = () => {
-    // create a new list IF there is none yet
+    // Create a new list IF there is none yet
     if (!state.list) state.list = new List();
 
-    // add each ingredient to the list and UI
+    // Add each ingredient to the list and UI
     state.recipe.ingredients.forEach(el => {
         const item = state.list.addItem(el.count, el.unit, el.ingredient);
         listView.renderItem(item);
@@ -119,10 +120,10 @@ elements.shopping.addEventListener('click', e => {
 
     // Handle the delete button 
     if (e.target.matches('.shopping__delete, .shopping__delete *')) {
-        // delete from state 
+        // Delete from state 
         state.list.deleteItem(id);
 
-        // delete from UI
+        // Delete from UI
         listView.deleteItem(id);
 
     // Handle the count update
@@ -133,11 +134,6 @@ elements.shopping.addEventListener('click', e => {
 });
 
 //*** LIKES CONTROLLER ***//
-
-// TESTING
-state.likes = new Likes();
-likesView.toggleLikeMenu(state.likes.getNumLikes());
-
 const controlLike = () => {
     if (!state.likes) state.likes = new Likes();
     const currentID = state.recipe.id;
@@ -159,7 +155,7 @@ const controlLike = () => {
         // Add like to UI list
         likesView.renderLike(newLike);
 
-    // User has liked current recipe
+    // User HAS liked current recipe
     } else {
 
         // Remove like from state
@@ -175,6 +171,19 @@ const controlLike = () => {
     likesView.toggleLikeMenu(state.likes.getNumLikes());
 };
 
+// Restore liked recipes on page load
+window.addEventListener('load', () => {
+    state.likes = new Likes();
+    
+    // Restore Likes
+    state.likes.readStorage();
+    
+    // Toggle like menu button
+    likesView.toggleLikeMenu(state.likes.getNumLikes());
+    
+    // Render existing likes 
+    state.likes.likes.forEach(like => likesView.renderLike(like));
+});
 
 // Handling Recipe button clicks 'inc', 'dec'
 elements.recipe.addEventListener('click', e => {
@@ -188,13 +197,13 @@ elements.recipe.addEventListener('click', e => {
         // Increase button is clicked
         state.recipe.updateServings('inc');
         recipeView.updateServingsIngredients(state.recipe);
+
     } else if (e.target.matches('.recipe__btn--add, .recipe__btn--add *')) {
         // Add ingredients to shopping list
         controlList();
+
     } else if (e.target.matches('.recipe__love, .recipe__love *')) {
         // Like controller
         controlLike();
     }
 });
-
-window.l = new List();
